@@ -19,15 +19,16 @@ _CTRL + V_ Can paste screenshots (saved as base64 in json file and included in r
 
 _ALT + T_  Inserts timestamp in markdown area
 
-Flowchart - Everything added in-between the ```attackpath is added to the flowchart. Accepts code in `command` format as well.
+Flowchart - Everything added in-between the **```attackpath** is added to the flowchart. Accepts code format for commands in-between back ticks **(``)**
 
+   
 ```attackpath
    - Target
     - Web
       - Directories
        - `/admin`
     - Initial Access
- ```
+```
 
 <img width="933" height="217" alt="image" src="https://github.com/user-attachments/assets/78e3ad0f-7552-481d-b48d-d9f9611c323f" />
 
