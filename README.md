@@ -2,6 +2,9 @@
 Cyber Security Notes Template 
 All contained in one HTML file is a all-in-one note taking application.
 
+<img width="1908" height="879" alt="image" src="https://github.com/user-attachments/assets/1909f15a-8ee4-4dcb-97c0-a672f1032fcf" />
+
+
 **Left Pane**
 Includes a markdown (.md) formatted note taking section with a starting template to use during any
 penetration testing engagement, CTF, or HackTheBox box, etc.
