@@ -78,7 +78,7 @@
 ```attackpath
 - Target
  - Discovery
- - Web
+  - Web
  - Vulnerabilities
  - Initial Access
  - Privilege Escalation
@@ -109,8 +109,7 @@ OS -
 <div id="left-pane">
     <div class="editor-header">
         <span>Engagement Notes (Markdown)</span>
-        <span style="color: var(--accent);">Shortcut: Alt+T for Timestamp</span>
-	<span style="color: var(--accent);">Everything in-between ``` is added to the flowchart</span>
+	<span style="color: var(--accent);"><font color=white>Alt+T</font> for Timestamp <br> <font color=white>Ctrl+V</font> to paste screenshots</span>
     </div>
     <textarea id="markdown-editor" spellcheck="false" oninput="debouncedParse()"></textarea>
 </div>
@@ -156,7 +155,7 @@ OS -
     let images = [];
     let network = null;
     let parseTimeout = null;
-    
+
     // We now keep the nodes/edges global so the Ghost Renderer can clone them perfectly
     let globalNodes = new vis.DataSet();
     let globalEdges = new vis.DataSet();
@@ -176,11 +175,11 @@ OS -
             const now = new Date();
             const pad = (n) => n.toString().padStart(2, '0');
             const timestamp = `[${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}] `;
-            
+
             const startPos = this.selectionStart;
             const endPos = this.selectionEnd;
             const text = this.value;
-            
+
             this.value = text.substring(0, startPos) + timestamp + text.substring(endPos, text.length);
             this.selectionStart = this.selectionEnd = startPos + timestamp.length;
             debouncedParse();
@@ -333,7 +332,7 @@ OS -
     function generateHighResCanvas(callback) {
         // Create an invisible, massive 4K container in the background
         const exportContainer = document.createElement('div');
-        exportContainer.style.width = '3840px'; 
+        exportContainer.style.width = '3840px';
         exportContainer.style.height = '2160px';
         exportContainer.style.position = 'absolute';
         exportContainer.style.top = '-9999px';
@@ -363,11 +362,11 @@ OS -
                     ctx.drawImage(canvas, 0, 0);
 
                     const dataUrl = tempCanvas.toDataURL('image/png');
-                    
+
                     // Destroy the ghost renderer to save RAM
                     exportNetwork.destroy();
                     document.body.removeChild(exportContainer);
-                    
+
                     callback(dataUrl);
                 } catch(err) {
                     console.error(err);
@@ -428,7 +427,7 @@ OS -
         const oldText = btn.innerText;
         btn.innerText = "GENERATING 4K MAP...";
         btn.style.background = "var(--accent)";
-        
+
         generateHighResCanvas((dataUrl) => {
             const a = document.createElement('a');
             a.download = 'attack_map_hires.png';
@@ -436,7 +435,7 @@ OS -
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            
+
             btn.innerText = oldText;
             btn.style.background = "#30363d";
         });
@@ -461,7 +460,7 @@ OS -
         const btn = document.getElementById('btn-export-zip');
         const oldText = btn.innerText;
         btn.innerText = "PACKAGING EVIDENCE...";
-        
+
         // Use the Ghost Renderer to guarantee the map in the ZIP is 4K Hi-Res
         generateHighResCanvas(async (hiResMapDataUrl) => {
             const zip = new JSZip();
@@ -490,7 +489,7 @@ OS -
             a.href = URL.createObjectURL(content);
             a.download = rootName + "_report.zip";
             a.click();
-            
+
             btn.innerText = oldText;
         });
     }
