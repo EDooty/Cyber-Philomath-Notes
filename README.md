@@ -1,6 +1,6 @@
 # Cyber-Philomath-Notes
 Cyber Security Notes Template 
-All contained in one HTML file is a all-in-one note taking application.
+All-in-one HTML note taking application.
 
 <img width="1897" height="832" alt="image" src="https://github.com/user-attachments/assets/e3bff489-6a12-47ed-811c-aab66b822f99" />
 
