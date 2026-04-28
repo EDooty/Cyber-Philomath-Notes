@@ -24,8 +24,16 @@ ALT + T - Inserts timestamp in markdown area
 
 Flowchart - Everything added in-between the **```attackpath** is added to the flowchart. Accepts code format for commands in-between back ticks **(``)**
 
+```attackpath
+ - Target
+  - Discovery
+   - Web
+    - Directories
+     - `/admin`
+  - Initial Access
+```
    
-<img width="711" height="296" alt="image" src="https://github.com/user-attachments/assets/f1b978a7-f4ee-43d8-93e1-3f8d4ab78549" />
+<img width="853" height="163" alt="image" src="https://github.com/user-attachments/assets/877e2418-6f78-41a3-bd0a-c4a7318673c7" />
 
 
 **Goals:**
