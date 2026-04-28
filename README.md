@@ -2,7 +2,7 @@
 Cyber Security Notes Template 
 All contained in one HTML file is a all-in-one note taking application.
 
-<img width="1908" height="879" alt="image" src="https://github.com/user-attachments/assets/1909f15a-8ee4-4dcb-97c0-a672f1032fcf" />
+<img width="1897" height="832" alt="image" src="https://github.com/user-attachments/assets/e3bff489-6a12-47ed-811c-aab66b822f99" />
 
 
 **Left Pane**
