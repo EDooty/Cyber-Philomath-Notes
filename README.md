@@ -22,7 +22,9 @@ CTRL + V - Can paste screenshots (saved as base64 in json file and included in r
 
 ALT + T - Inserts timestamp in markdown area
 
-Flowchart - Everything added in-between the **```attackpath** is added to the flowchart. Accepts code format for commands in-between back ticks **(``)**
+**Flowchart** 
+
+Everything added in-between the **```attackpath** is added to the flowchart. Accepts code format for commands in-between back ticks **(``)**
 
 ```attackpath
  - Target
