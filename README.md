@@ -1,6 +1,5 @@
 # Cyber-Philomath-Notes
-Cyber Security Notes Template 
-All-in-one HTML note taking application.
+Cyber Security all-in-one (HTML) note taking application.
 
 <img width="1912" height="982" alt="image" src="https://github.com/user-attachments/assets/1d984e4c-7a0c-4aa0-8625-3c6af43aff9e" />
 
