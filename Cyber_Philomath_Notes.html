@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cyber Philomath - Pentest Reporting Engine</title>
+    <title>Cyber Philomath - Live Markdown Engine</title>
+    <!-- Core Dependencies -->
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
@@ -39,7 +40,7 @@
 
         /* TOOLS SECTION */
         #tools-section { padding: 15px; border-bottom: 1px solid var(--input-border); background: var(--card); flex-shrink: 0; }
-        h2 { margin: 0 0 10px 0; color: var(--accent); font-weight: 900; letter-spacing: 1px; font-size: 14px; text-transform: uppercase; }
+        h2 { margin: 0 0 10px 0; color: var(--accent); font-weight: bold; letter-spacing: 1px; font-size: 12px; text-transform: uppercase; }
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
 
         .btn { background: #30363d; color: var(--text); border: 1px solid var(--input-border); padding: 8px; cursor: pointer; font-weight: bold; border-radius: 6px; font-size: 11px; text-transform: uppercase; transition: 0.2s; text-align: center; }
@@ -47,23 +48,79 @@
         .btn-danger { background: #da3633; color: white; border: none; }
         .btn-success { background: var(--success); color: white; border: none; }
 
-        /* GALLERY */
-        #gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-height: 120px; overflow-y: auto; margin-top: 10px; padding-right: 5px; }
-        .gallery-item { position: relative; width: 100%; }
-        .thumb { width: 100%; border-radius: 4px; cursor: zoom-in; border: 1px solid var(--input-border); }
-        .img-del-btn { position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; z-index: 5; }
+        /* GALLERY - 3 columns */
+        #gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            margin-top: 10px;
+            padding-right: 5px;
+            box-sizing: border-box;
+        }
+        .gallery-item {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 0;
+            background: var(--card);
+            padding: 5px;
+            border-radius: 6px;
+            border: 1px solid var(--input-border);
+            box-sizing: border-box;
+        }
+        .thumb {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: zoom-in;
+            background: #000;
+        }
+        .img-del-btn {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            z-index: 5;
+            font-size: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .img-label {
+            font-size: 9px;
+            color: #8b949e;
+            text-align: center;
+            margin-top: 4px;
+            width: 100%;
+            word-break: break-all;
+            font-family: 'Fira Code', monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         /* MINI FLOWCHART */
         #network-container { flex-grow: 1; position: relative; background: var(--bg); display: flex; flex-direction: column; min-height: 0; }
         .map-header { padding: 10px 15px; font-size: 11px; font-weight: bold; color: var(--accent); text-transform: uppercase; background: var(--sidebar-bg); border-bottom: 1px solid var(--input-border); flex-shrink: 0; }
-
         #network-wrapper { flex-grow: 1; position: relative; min-height: 0; overflow: hidden; }
         #mynetwork { position: absolute; top: 0; left: 0; width: 100%; height: 100%; outline: none; cursor: grab; }
-        #mynetwork:active { cursor: grabbing; }
 
-        /* --- LIGHTBOX --- */
-        #lightbox { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; }
-        #lightbox img { max-width: 90%; max-height: 90%; border: 1px solid var(--input-border); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        /* LIGHTBOX */
+        #lightbox { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;}
+        #lightbox img { max-width: 100%; max-height: 100%; border: 1px solid var(--input-border); box-shadow: 0 0 20px rgba(0,0,0,0.5); object-fit: contain; }
     </style>
 </head>
 <body>
@@ -73,25 +130,24 @@
 <input type="file" id="load-input" style="display:none" accept=".json" onchange="loadData(this)">
 <input type="file" id="manual-upload" style="display:none" accept="image/*" onchange="handleFileUpload(this)">
 
-<script type="text/template" id="default-template"># [Target Name] [Date]
+<textarea id="default-template" style="display:none;">
+# [Target Name] [Date]
 
 ```attackpath
 - Target
  - Discovery
   - Web
- - Vulnerabilities
+   - Directories|`gobuster`
+    - `/admin`
  - Initial Access
- - Privilege Escalation
 ```
 
 ## [T1] - [IP]
 
-Hostname -
-OS -
+| Port | Service |
+|------|---------|
+|      |         |
 
-| Port | Service/Description |
-|------| ------------------- |
-|      |                     |
 
 ### Discovery
 
@@ -104,12 +160,12 @@ OS -
 ### Privilege Escalation
 
 ### Loot
-</script>
+</textarea>
 
 <div id="left-pane">
     <div class="editor-header">
         <span>Engagement Notes (Markdown)</span>
-	<span style="color: var(--accent);"><font color=white>Alt+T</font> for Timestamp <br> <font color=white>Ctrl+V</font> to paste screenshots</span>
+        <span style="color: var(--accent);"><font color=white>ALT+T</font>: Timestamp <br> <font color=white>CTRL+V</font>: Paste Screenshot <br> <font color=white>|</font>: Newline in flowchart</span>
     </div>
     <textarea id="markdown-editor" spellcheck="false" oninput="debouncedParse()"></textarea>
 </div>
@@ -117,78 +173,55 @@ OS -
 <div id="right-pane">
     <div id="tools-section">
         <h2>Workspace Tools</h2>
-
         <div class="row">
             <button class="btn btn-success" onclick="saveData()">Save Workspace</button>
             <button class="btn" onclick="document.getElementById('load-input').click()">Load Workspace</button>
         </div>
-
         <div class="row">
-            <button id="btn-export-png" class="btn" onclick="exportImage()">Export Hi-Res Map</button>
+            <button id="btn-export-png" class="btn" onclick="exportImage()">Export Super-HD Map</button>
             <button class="btn" onclick="exportMarkdown()">Export Notes (MD)</button>
         </div>
-
-        <button id="btn-export-zip" class="btn" style="background:#d29922; color:#fff; border:none; width: 100%; margin-bottom: 10px;" onclick="exportZip()">Export Evidence (ZIP)</button>
+        <button class="btn" style="background:#d29922; color:#fff; border:none; width: 100%; margin-bottom: 10px;" onclick="exportZip()">Export Evidence (ZIP)</button>
         <button class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" onclick="resetAll()">Reset Workspace</button>
-
         <div style="border-top: 1px solid var(--input-border); padding-top: 10px;">
             <button class="btn" style="width: 100%;" onclick="document.getElementById('manual-upload').click()">+ Upload Screenshot</button>
             <div id="gallery"></div>
         </div>
     </div>
-
     <div id="network-container">
         <div class="map-header">Live Attack Path</div>
-        <div id="network-wrapper">
-            <div id="mynetwork"></div>
-        </div>
+        <div id="network-wrapper"><div id="mynetwork"></div></div>
     </div>
 </div>
 
 <script>
     // Suppress benign ResizeObserver warnings
-    window.addEventListener('error', function(e) {
-        if (e.message && e.message.includes('ResizeObserver')) e.stopImmediatePropagation();
-    });
+    window.addEventListener('error', function(e) { if (e.message && e.message.includes('ResizeObserver')) e.stopImmediatePropagation(); });
 
-    // Global State Variables
     let images = [];
     let network = null;
     let parseTimeout = null;
-
-    // We now keep the nodes/edges global so the Ghost Renderer can clone them perfectly
     let globalNodes = new vis.DataSet();
     let globalEdges = new vis.DataSet();
 
     window.onload = function() {
-        const templateContent = document.getElementById('default-template').innerHTML.trim();
-        document.getElementById('markdown-editor').value = templateContent;
+        document.getElementById('markdown-editor').value = document.getElementById('default-template').value.trim();
         parseNotesToGraph();
     };
 
-    // ==========================================
-    // TIMESTAMP MACRO (Alt + T)
-    // ==========================================
     document.getElementById('markdown-editor').addEventListener('keydown', function(e) {
         if (e.altKey && e.key.toLowerCase() === 't') {
             e.preventDefault();
             const now = new Date();
             const pad = (n) => n.toString().padStart(2, '0');
             const timestamp = `[${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}] `;
-
-            const startPos = this.selectionStart;
-            const endPos = this.selectionEnd;
-            const text = this.value;
-
-            this.value = text.substring(0, startPos) + timestamp + text.substring(endPos, text.length);
-            this.selectionStart = this.selectionEnd = startPos + timestamp.length;
+            const start = this.selectionStart;
+            this.value = this.value.substring(0, start) + timestamp + this.value.substring(this.selectionEnd);
+            this.selectionStart = this.selectionEnd = start + timestamp.length;
             debouncedParse();
         }
     });
 
-    // ==========================================
-    // 1. FORGIVING MARKDOWN PARSER
-    // ==========================================
     function debouncedParse() {
         clearTimeout(parseTimeout);
         parseTimeout = setTimeout(() => { parseNotesToGraph(); }, 300);
@@ -199,344 +232,223 @@ OS -
             const text = document.getElementById('markdown-editor').value;
             const regex = /\x60\x60\x60(?:attackpath|map|graph)\s*\n([\s\S]*?)(?:\x60\x60\x60|$)/i;
             const match = text.match(regex);
-
             let parsedNodes = [];
-            globalNodes.clear();
-            globalEdges.clear();
+            globalNodes.clear(); globalEdges.clear();
             let rootName = "Target";
 
             if (match) {
                 const lines = match[1].split('\n');
                 let stack = [];
-                let idCounter = 1;
                 let isFirst = true;
 
                 lines.forEach(line => {
                     if (line.trim() === '') return;
                     const bulletMatch = line.match(/^([ \t]*)([\*\-\+])\s*(.*)$/);
-
                     if (bulletMatch) {
-                        const indentSpaces = bulletMatch[1].replace(/\t/g, '    ').length;
-                        const content = bulletMatch[3].trim();
-
+                        const indent = bulletMatch[1].replace(/\t/g, '    ').length;
+                        let content = bulletMatch[3].trim().replace(/\|/g, '\n');
                         if (isFirst) {
-                            rootName = content;
-                            stack.push({ indent: indentSpaces, id: 'root' });
+                            rootName = content.split('\n')[0].replace(/[*`]/g, '');
+                            stack.push({ indent, id: 'root' });
                             parsedNodes.push({ id: 'root', name: content, parent: null, depth: 0 });
                             isFirst = false;
                         } else {
-                            while (stack.length > 1 && stack[stack.length - 1].indent >= indentSpaces) {
-                                stack.pop();
-                            }
-                            const parentId = stack.length > 0 ? stack[stack.length - 1].id : 'root';
-                            const nodeId = 'n_' + idCounter++;
-
+                            while (stack.length > 1 && stack[stack.length - 1].indent >= indent) stack.pop();
+                            const parentId = stack[stack.length - 1].id;
+                            const nodeId = 'n_' + Math.random().toString(36).substr(2, 9);
                             parsedNodes.push({ id: nodeId, name: content, parent: parentId, depth: stack.length });
-                            stack.push({ indent: indentSpaces, id: nodeId });
+                            stack.push({ indent, id: nodeId });
                         }
                     }
                 });
             }
-
             document.getElementById('root-name').value = rootName;
-            buildVisDatasets(parsedNodes, globalNodes, globalEdges);
-            renderMap(globalNodes, globalEdges);
-        } catch (err) {
-            console.error("Error parsing graph:", err);
-        }
+            buildVisDatasets(parsedNodes);
+            renderMap(document.getElementById('mynetwork'), globalNodes, globalEdges);
+        } catch (err) { console.error(err); }
     }
 
-    // ==========================================
-    // 2. VIS.JS GRAPH BUILDER
-    // ==========================================
-    function buildVisDatasets(parsedNodes, visNodes, visEdges) {
+    function buildVisDatasets(parsedNodes) {
         const colors = [
-            { bg: '#21262d', border: '#58a6ff', text: '#c9d1d9' },
-            { bg: '#1f6feb', border: '#30363d', text: '#ffffff' },
-            { bg: '#238636', border: '#30363d', text: '#ffffff' },
-            { bg: '#d29922', border: '#30363d', text: '#ffffff' },
-            { bg: '#8957e5', border: '#30363d', text: '#ffffff' },
-            { bg: '#f85149', border: '#30363d', text: '#ffffff' }
+            { bg: '#21262d', br: '#58a6ff', tx: '#c9d1d9' },
+            { bg: '#1f6feb', br: '#30363d', tx: '#ffffff' },
+            { bg: '#238636', br: '#30363d', tx: '#ffffff' },
+            { bg: '#d29922', br: '#30363d', tx: '#ffffff' },
+            { bg: '#8957e5', br: '#30363d', tx: '#ffffff' },
+            { bg: '#f85149', br: '#30363d', tx: '#ffffff' }
         ];
 
-        const baseNodeOptions = {
-            shape: 'box', borderWidth: 2, borderWidthSelected: 4,
-            margin: { top: 12, right: 20, bottom: 12, left: 20 },
-            shadow: { enabled: true, color: 'rgba(0,0,0,0.8)', size: 10, x: 5, y: 5 }
-        };
-
         parsedNodes.forEach(n => {
-            let colorLevel = n.depth > 5 ? 5 : n.depth;
-            let c = colors[colorLevel];
-            let displayLabel = ' ' + (n.name || "...") + ' ';
-
-            if ((displayLabel.match(/\x60/g) || []).length % 2 !== 0) displayLabel += '\x60';
-            if ((displayLabel.match(/\*/g) || []).length % 2 !== 0) displayLabel += '*';
-
-            displayLabel = displayLabel.replace(/\x60(.*?)\x60/g, '<code>$1</code>');
-            displayLabel = displayLabel.replace(/\*(.*?)\*/g, '<b>$1</b>');
-
-            visNodes.add({
-                id: n.id,
-                label: displayLabel,
-                level: n.depth,
-                ...baseNodeOptions,
-                color: { background: c.bg, border: c.border, highlight: { background: c.bg, border: '#ffffff' } },
+            const c = colors[n.depth > 5 ? 5 : n.depth];
+            globalNodes.add({
+                id: n.id, label: n.name, level: n.depth, shape: 'box', borderWidth: 2, margin: 15, shadow: true,
+                color: { background: c.bg, border: c.br, highlight: { background: c.bg, border: '#ffffff' } },
                 font: {
-                    multi: 'html', color: c.text, align: 'left', face: "'Segoe UI', sans-serif", size: 14,
-                    bold: { color: '#ffffff', size: 14, mod: 'bold' },
-                    mono: { color: 'var(--accent)', face: "'Fira Code', 'Consolas', monospace", size: 13 }
+                    multi: 'md',
+                    color: c.tx,
+                    align: 'center',
+                    face: "'Segoe UI', sans-serif",
+                    size: 14,
+                    bold: { color: '#ffffff' },
+                    mono: { color: '#000000', face: "'Fira Code', monospace" } // CHANGED: Code commands now black
                 }
             });
-
-            if (n.parent) {
-                visEdges.add({
-                    from: n.parent, to: n.id, arrows: 'to',
-                    color: { color: '#58a6ff', highlight: '#ffffff' }, width: 3,
-                    smooth: { type: 'cubicBezier', forceDirection: 'horizontal', roundness: 0.4 }
-                });
-            }
+            if (n.parent) globalEdges.add({ from: n.parent, to: n.id, arrows: 'to', color: { color: '#58a6ff' }, width: 2, smooth: { type: 'cubicBezier', forceDirection: 'vertical', roundness: 0.5 } });
         });
     }
 
-    function renderMap(visNodes, visEdges) {
-        const container = document.getElementById('mynetwork');
-        const data = { nodes: visNodes, edges: visEdges };
-
+    function renderMap(container, nodes, edges) {
         const options = {
-            layout: { hierarchical: { direction: 'LR', sortMethod: 'directed', nodeSpacing: 80, levelSeparation: 180 } },
+            layout: { hierarchical: { direction: 'UD', sortMethod: 'directed', nodeSpacing: 250, levelSeparation: 150, parentCentralization: true } },
             physics: { enabled: false },
             interaction: { dragNodes: true, dragView: true, zoomView: true, hover: true }
         };
-
-        if (network !== null) {
-            const scale = network.getScale();
-            const position = network.getViewPosition();
+        if (network && container.id === 'mynetwork') {
+            const scale = network.getScale(); const pos = network.getViewPosition();
             network.destroy();
-            network = new vis.Network(container, data, options);
-            network.moveTo({ position: position, scale: scale });
+            network = new vis.Network(container, { nodes, edges }, options);
+            network.moveTo({ position: pos, scale: scale });
         } else {
-            network = new vis.Network(container, data, options);
+            let net = new vis.Network(container, { nodes, edges }, options);
+            if (container.id === 'mynetwork') network = net;
+            return net;
         }
     }
 
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => { if (network) network.fit(); }, 150);
-    });
-
     // ==========================================
-    // 3. HI-RES GHOST RENDERER (4K Export Engine)
+    // SUPER-HD TRANSPARENT EXPORT ENGINE
     // ==========================================
-    function generateHighResCanvas(callback) {
-        // Create an invisible, massive 4K container in the background
-        const exportContainer = document.createElement('div');
-        exportContainer.style.width = '3840px';
-        exportContainer.style.height = '2160px';
-        exportContainer.style.position = 'absolute';
-        exportContainer.style.top = '-9999px';
-        document.body.appendChild(exportContainer);
+    async function getHighResImageData() {
+        return new Promise((resolve) => {
+            const btn = document.getElementById('btn-export-png');
+            const originalText = btn.innerText;
+            btn.innerText = "RENDERING HD...";
 
-        const exportOptions = {
-            layout: { hierarchical: { direction: 'LR', sortMethod: 'directed', nodeSpacing: 100, levelSeparation: 220 } },
-            physics: { enabled: false }
-        };
+            // 1. Create a massive ghost container
+            const ghostContainer = document.createElement('div');
+            // Calculation: Use a very large fixed dimension to ensure vectors render perfectly at scale
+            ghostContainer.style.width = '6000px';
+            ghostContainer.style.height = '4500px';
+            ghostContainer.style.position = 'absolute';
+            ghostContainer.style.left = '-10000px';
+            ghostContainer.style.top = '-10000px';
+            ghostContainer.style.background = 'transparent'; // Ensure container is transparent
+            document.body.appendChild(ghostContainer);
 
-        // Render the global nodes into this giant hidden box
-        const exportNetwork = new vis.Network(exportContainer, { nodes: globalNodes, edges: globalEdges }, exportOptions);
+            // 2. Render ghost network
+            const ghostNetwork = renderMap(ghostContainer, globalNodes, globalEdges);
 
-        // Wait for it to fully draw the 4K image, then snapshot it
-        exportNetwork.once("afterDrawing", function() {
             setTimeout(() => {
-                try {
-                    const canvas = exportContainer.querySelector('canvas');
-                    const tempCanvas = document.createElement('canvas');
-                    tempCanvas.width = canvas.width;
-                    tempCanvas.height = canvas.height;
-                    const ctx = tempCanvas.getContext('2d');
+                ghostNetwork.fit(); // Capture everything
 
-                    // Paint background so it isn't transparent
-                    ctx.fillStyle = '#0d1117';
-                    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                setTimeout(() => {
+                    const canvas = ghostContainer.querySelector('canvas');
+
+                    // Create a supersampled canvas
+                    const finalCanvas = document.createElement('canvas');
+                    finalCanvas.width = canvas.width;
+                    finalCanvas.height = canvas.height;
+                    const ctx = finalCanvas.getContext('2d');
+
+                    // Note: No background fill. ctx.clearRect or just drawing is sufficient for transparency.
                     ctx.drawImage(canvas, 0, 0);
 
-                    const dataUrl = tempCanvas.toDataURL('image/png');
+                    // Export at full quality
+                    const dataUrl = finalCanvas.toDataURL('image/png', 1.0);
 
-                    // Destroy the ghost renderer to save RAM
-                    exportNetwork.destroy();
-                    document.body.removeChild(exportContainer);
-
-                    callback(dataUrl);
-                } catch(err) {
-                    console.error(err);
-                    alert("Error generating Hi-Res map.");
-                }
-            }, 300); // 300ms buffer ensures fonts are perfectly crisp before snapshot
+                    // Cleanup
+                    ghostNetwork.destroy();
+                    document.body.removeChild(ghostContainer);
+                    btn.innerText = originalText;
+                    resolve(dataUrl);
+                }, 300);
+            }, 600);
         });
     }
 
-    // ==========================================
-    // 4. WORKSPACE TOOLS (Save, Load, Export, Zip)
-    // ==========================================
-    function resetAll() {
-        if(confirm("Reset Workspace? This clears your notes and screenshots.")) {
-            const templateContent = document.getElementById('default-template').innerHTML.trim();
-            document.getElementById('markdown-editor').value = templateContent;
-            document.getElementById('root-name').value = "Target";
-            document.getElementById('load-input').value = "";
-            document.getElementById('manual-upload').value = "";
-            images = [];
-            document.getElementById('gallery').innerHTML = '';
-            parseNotesToGraph();
+    async function exportImage() {
+        const data = await getHighResImageData();
+        const a = document.createElement('a');
+        const root = (document.getElementById('root-name').value || "map").replace(/[^\w\s-]/gi, '_');
+        a.download = root + '_super_hd_transparent.png'; a.href = data; a.click();
+    }
+
+    async function exportZip() {
+        const zip = new JSZip();
+        const root = (document.getElementById('root-name').value || "report").replace(/[^\w\s-]/gi, '_');
+        if (images.length > 0) {
+            const folder = zip.folder("screenshots");
+            images.forEach(img => folder.file(img.name, img.data.split(',')[1], {base64: true}));
         }
+        const hdMap = await getHighResImageData();
+        zip.file(root + "_transparent_map.png", hdMap.split(',')[1], {base64: true});
+        zip.file("notes.md", document.getElementById('markdown-editor').value);
+        const blob = await zip.generateAsync({type:"blob"});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = root + '_package.zip'; a.click();
     }
 
     function saveData() {
-        const payload = { markdown: document.getElementById('markdown-editor').value, images: images };
-        const blob = new Blob([JSON.stringify(payload)], {type: "application/json"});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'cyber_philomath_workspace.json';
-        a.click();
+        const blob = new Blob([JSON.stringify({ markdown: document.getElementById('markdown-editor').value, images })], {type: "application/json"});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'workspace.json'; a.click();
     }
 
     function loadData(input) {
-        if (!input.files || input.files.length === 0) return;
+        if (!input.files[0]) return;
         const reader = new FileReader();
         reader.onload = e => {
-            try {
-                const data = JSON.parse(e.target.result);
-                if(data.markdown) {
-                    document.getElementById('markdown-editor').value = data.markdown;
-                }
-                images = data.images || [];
-                document.getElementById('gallery').innerHTML = '';
-                images.forEach(img => { renderGalleryItem(img.id, img.data); });
-                parseNotesToGraph();
-            } catch(err) {
-                alert("Failed to load workspace file.");
-            }
-            input.value = '';
+            const data = JSON.parse(e.target.result);
+            document.getElementById('markdown-editor').value = data.markdown;
+            images = data.images || [];
+            document.getElementById('gallery').innerHTML = '';
+            images.forEach(img => renderGalleryItem(img.id, img.data, img.name));
+            parseNotesToGraph();
         };
         reader.readAsText(input.files[0]);
     }
 
-    function exportImage() {
-        const btn = document.getElementById('btn-export-png');
-        const oldText = btn.innerText;
-        btn.innerText = "GENERATING 4K MAP...";
-        btn.style.background = "var(--accent)";
-
-        generateHighResCanvas((dataUrl) => {
-            const a = document.createElement('a');
-            a.download = 'attack_map_hires.png';
-            a.href = dataUrl;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            btn.innerText = oldText;
-            btn.style.background = "#30363d";
-        });
-    }
-
     function exportMarkdown() {
-        const mdContent = document.getElementById('markdown-editor').value;
-        const rootName = (document.getElementById('root-name').value || "evidence").replace(/[^\w\s-]/gi, '_');
-        const blob = new Blob([mdContent], {type: "text/markdown"});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = rootName + "_notes.md";
-        a.click();
+        const blob = new Blob([document.getElementById('markdown-editor').value], {type: "text/markdown"});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'notes.md'; a.click();
     }
 
-    function exportZip() {
-        if (images.length === 0 && document.getElementById('markdown-editor').value.trim() === '') {
-            alert("Workspace is empty.");
-            return;
-        }
-
-        const btn = document.getElementById('btn-export-zip');
-        const oldText = btn.innerText;
-        btn.innerText = "PACKAGING EVIDENCE...";
-
-        // Use the Ghost Renderer to guarantee the map in the ZIP is 4K Hi-Res
-        generateHighResCanvas(async (hiResMapDataUrl) => {
-            const zip = new JSZip();
-            const rootName = (document.getElementById('root-name').value || "evidence").replace(/[^\w\s-]/gi, '_');
-
-            // 1. Pack Images
-            if (images.length > 0) {
-                const imgFolder = zip.folder(rootName + "_screenshots");
-                images.forEach((img, index) => {
-                    const base64Data = img.data.split(',')[1];
-                    imgFolder.file(`screenshot_${index + 1}.png`, base64Data, {base64: true});
-                });
-            }
-
-            // 2. Pack Hi-Res Map
-            const mapBase64 = hiResMapDataUrl.split(',')[1];
-            zip.file(rootName + "_attack_map.png", mapBase64, {base64: true});
-
-            // 3. Pack Markdown Notes
-            const mdContent = document.getElementById('markdown-editor').value;
-            zip.file(rootName + "_notes.md", mdContent);
-
-            // Generate
-            const content = await zip.generateAsync({type:"blob"});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(content);
-            a.download = rootName + "_report.zip";
-            a.click();
-
-            btn.innerText = oldText;
-        });
-    }
-
-    // ==========================================
-    // 5. EVIDENCE GALLERY (Screenshots)
-    // ==========================================
     window.addEventListener('paste', e => {
+        if(document.activeElement === document.getElementById('markdown-editor')) return;
         const item = Array.from(e.clipboardData.items).find(x => x.type.indexOf('image') !== -1);
-        if (item) processImage(item.getAsFile());
+        if (item) {
+            let name = prompt("Name screenshot:", `screenshot_${images.length + 1}`);
+            if (name) processImage(item.getAsFile(), name.replace(/[^a-zA-Z0-9_\-\.]/g, '_') + '.png');
+        }
     });
 
     function handleFileUpload(input) {
-        if (input.files && input.files[0]) {
-            processImage(input.files[0]);
+        if (input.files[0]) {
+            let name = prompt("Name screenshot:", input.files[0].name);
+            if (name) processImage(input.files[0], name.replace(/[^a-zA-Z0-9_\-\.]/g, '_'));
             input.value = '';
         }
     }
 
-    function processImage(file) {
+    function processImage(file, name) {
         const reader = new FileReader();
         reader.onload = ev => {
-            const imgId = "img_" + Date.now();
-            images.push({ id: imgId, data: ev.target.result });
-            renderGalleryItem(imgId, ev.target.result);
+            const id = "img_" + Date.now();
+            images.push({ id, name, data: ev.target.result });
+            renderGalleryItem(id, ev.target.result, name);
         };
         reader.readAsDataURL(file);
     }
 
-    function renderGalleryItem(id, data) {
+    function renderGalleryItem(id, data, name) {
         const div = document.createElement('div');
-        div.className = 'gallery-item';
-        div.id = id;
-        div.innerHTML = `<button class="img-del-btn" onclick="deleteImage('${id}')">×</button><img src="${data}" class="thumb" onclick="openLightbox(this.src)">`;
+        div.className = 'gallery-item'; div.id = id;
+        div.innerHTML = `<button class="img-del-btn" onclick="deleteImage('${id}')">×</button><img src="${data}" class="thumb" onclick="openLightbox(this.src)" title="${name}"><div class="img-label" title="${name}">${name}</div>`;
         document.getElementById('gallery').prepend(div);
     }
 
-    function deleteImage(id) {
-        images = images.filter(img => img.id !== id);
-        const el = document.getElementById(id);
-        if (el) el.remove();
-    }
-
-    function openLightbox(src) {
-        document.getElementById('lightbox-img').src = src;
-        document.getElementById('lightbox').style.display='flex';
-    }
+    function deleteImage(id) { images = images.filter(img => img.id !== id); document.getElementById(id).remove(); }
+    function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').style.display='flex'; }
+    function resetAll() { if(confirm("Reset Workspace?")) { images = []; document.getElementById('gallery').innerHTML = ''; document.getElementById('markdown-editor').value = document.getElementById('default-template').value.trim(); parseNotesToGraph(); } }
+    window.addEventListener('resize', () => { if (network) network.fit(); });
 </script>
 </body>
 </html>
