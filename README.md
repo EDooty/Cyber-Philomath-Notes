@@ -42,15 +42,15 @@ Everything added in-between the **```attackpath** is added to the flowchart. Acc
 
 **Goals:**
 
-- template for penetration testing engagnments
+- template for penetration testing engagements
   
 - note template for CTFs
   
 - note template for HackTheBox boxes
   
-- ability to add flowcharts of users methodology
+- ability to add flowchart of methodology used
   
-- ability to copy in screenshots
+- ability to paste in screenshots
   
 - export full zip of .md file, .png flowchart, and any screenshots
   
