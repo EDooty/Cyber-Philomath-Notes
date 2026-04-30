@@ -2,8 +2,7 @@
 Cyber Security Notes Template 
 All-in-one HTML note taking application.
 
-<img width="1897" height="832" alt="image" src="https://github.com/user-attachments/assets/e3bff489-6a12-47ed-811c-aab66b822f99" />
-
+<img width="1912" height="982" alt="image" src="https://github.com/user-attachments/assets/1d984e4c-7a0c-4aa0-8625-3c6af43aff9e" />
 
 **Left Pane**
 Includes a markdown (.md) formatted note taking section with a starting template to use during any
@@ -24,18 +23,18 @@ ALT + T - Inserts timestamp in markdown area
 
 **Flowchart** 
 
-Everything added in-between the **```attackpath** is added to the flowchart. Accepts code format for commands in-between back ticks **(``)**
+Everything added in-between the **```attackpath** is added to the flowchart. Accepts code format for commands in-between back ticks **(``)** and newlines with **(|)**.
 
 ```attackpath
- - Target
-  - Discovery
-   - Web
-    - Directories
-     - `/admin`
-  - Initial Access
+- Target
+ - Discovery
+  - Web
+   - Directories|`gobuster`
+    - `/admin`
+ - Initial Access
 ```
    
-<img width="853" height="163" alt="image" src="https://github.com/user-attachments/assets/877e2418-6f78-41a3-bd0a-c4a7318673c7" />
+<img width="370" height="627" alt="image" src="https://github.com/user-attachments/assets/7a5810db-d0a0-49a0-b913-8111e6de3468" />
 
 
 **Goals:**
