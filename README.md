@@ -18,6 +18,9 @@ this is mostly to save space, I might change it later.
 **Shortcuts**
 
 CTRL + V - Can paste screenshots (saved as base64 in json file and included in right pane). 
+** May need to CTRL + V where it says Upload Screenshot in the top right pane
+
+| - used to add new line to node in flowchart
 
 ALT + T - Inserts timestamp in markdown area
 
