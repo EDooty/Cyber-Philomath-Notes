@@ -10,7 +10,8 @@ penetration testing engagement, CTF, or HackTheBox box, etc.
 
 **Right Pane**
 Includes functionallity to export the flowchart as a .png file. Export .zip file including .png flowchart, .md markdown of notes, and any screenshots.
-Additionally, included functionally is saving workspaces as .json files that can be loaded later and the ability to reset the workspace
+Additionally, included functionally is saving workspaces as .json files that can be loaded later and the ability to reset the workspace. 
+** Select option in browser settings to "alway's ask where to save files" if you dont want the exports always going to the Downloads folder.
 
 The upload screenshot button lets you upload screenshots. The ability to paste screenshots (CTRL + V) is also supported. Screenshots are saved separately from the main markdown file
 this is mostly to save space, I might change it later.
@@ -18,6 +19,7 @@ this is mostly to save space, I might change it later.
 **Shortcuts**
 
 CTRL + V - Can paste screenshots (saved as base64 in json file and included in right pane). 
+
 ** Click out of the markdown editor in order to paste screenshot
 
 | - used to add new line to node in flowchart
@@ -26,7 +28,8 @@ ALT + T - Inserts timestamp in markdown area
 
 **Flowchart** 
 
-Everything added in-between the **```attackpath** is added to the flowchart. Accepts code format for commands in-between back ticks **(``)** and newlines with **(|)**.
+Everything added in-between the **```attackpath** is added to the flowchart. 
+Accepts code format for commands in-between back ticks **(``)** and newlines with **(|)**.
 
 ```attackpath
 - Target
