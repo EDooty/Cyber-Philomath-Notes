@@ -1,7 +1,8 @@
 # Cyber-Philomath-Notes
 Cyber Security all-in-one (HTML) note taking application.
 
-<img width="1912" height="982" alt="image" src="https://github.com/user-attachments/assets/1d984e4c-7a0c-4aa0-8625-3c6af43aff9e" />
+<img width="1920" height="1005" alt="image" src="https://github.com/user-attachments/assets/b147a673-d21b-48e8-bb7c-7816763873a6" />
+
 
 **Left Pane**
 Includes a markdown (.md) formatted note taking section with a starting template to use during any
@@ -17,7 +18,7 @@ this is mostly to save space, I might change it later.
 **Shortcuts**
 
 CTRL + V - Can paste screenshots (saved as base64 in json file and included in right pane). 
-** May need to CTRL + V where it says Upload Screenshot in the top right pane
+** Click out of the markdown editor in order to paste screenshot
 
 | - used to add new line to node in flowchart
 
@@ -30,13 +31,14 @@ Everything added in-between the **```attackpath** is added to the flowchart. Acc
 ```attackpath
 - Target
  - Discovery
-  - Web
-   - Directories|`gobuster`
-    - `/admin`
+  - Web|Directories
+   - `gobuster`
+    - /admin
  - Initial Access
+  - *Vulnerability*|CVE-2021-44228
 ```
    
-<img width="370" height="627" alt="image" src="https://github.com/user-attachments/assets/7a5810db-d0a0-49a0-b913-8111e6de3468" />
+<img width="427" height="677" alt="image" src="https://github.com/user-attachments/assets/0f6956de-99ba-4815-b219-d0159c1e163e" />
 
 
 **Goals:**
