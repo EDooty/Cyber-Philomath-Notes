@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Cyber Philomath - Note Engine</title>
+    <title>Cyber Philomath - Live Markdown Engine</title>
     <!-- Core Dependencies -->
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -77,6 +77,27 @@
         /* LIGHTBOX */
         #lightbox { display: none; position: fixed; z-index: 9999; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;}
         #lightbox img { max-width: 100%; max-height: 100%; border: 1px solid var(--input-border); box-shadow: 0 0 20px rgba(0,0,0,0.5); object-fit: contain; }
+
+        /* TTP LIBRARY MODAL */
+        #ttp-modal { display: none; position: fixed; z-index: 10000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; }
+        #ttp-modal .modal-content { display: flex; width: 85vw; height: 85vh; background: var(--bg); border: 1px solid var(--input-border); border-radius: 8px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }
+        .ttp-sidebar { width: 320px; background: var(--sidebar-bg); border-right: 1px solid var(--input-border); display: flex; flex-direction: column; }
+        .ttp-header { padding: 15px; border-bottom: 1px solid var(--input-border); display: flex; justify-content: space-between; align-items: center; background: #161b22; }
+        .ttp-header h3 { margin: 0; color: var(--accent); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .ttp-search { padding: 10px 15px; border-bottom: 1px solid var(--input-border); }
+        .ttp-search input { width: 100%; padding: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text); border-radius: 4px; box-sizing: border-box; outline: none; }
+        .ttp-list { flex-grow: 1; overflow-y: auto; padding: 15px; }
+        .ttp-item { padding: 10px 12px; background: var(--card); margin-bottom: 8px; border-radius: 4px; cursor: pointer; border: 1px solid var(--input-border); font-size: 13px; transition: 0.2s; }
+        .ttp-item:hover { border-color: var(--accent); }
+        .ttp-item.active { border-color: var(--accent); background: #1f6feb22; }
+        .ttp-category-label { font-size: 10px; color: #8b949e; margin: 15px 0 5px 0; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .ttp-editor { flex-grow: 1; display: flex; flex-direction: column; background: var(--bg); }
+        .ttp-editor-header { padding: 15px; border-bottom: 1px solid var(--input-border); display: flex; gap: 10px; background: var(--sidebar-bg); }
+        .ttp-editor-header input { flex-grow: 1; padding: 10px; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text); border-radius: 4px; font-size: 14px; font-weight: bold; outline: none; }
+        .ttp-editor-header input.cat-input { flex-grow: 0; width: 200px; font-weight: normal; }
+        .ttp-editor-body { flex-grow: 1; padding: 15px; display: flex; flex-direction: column; }
+        .ttp-editor-body textarea { flex-grow: 1; width: 100%; background: var(--input-bg); border: 1px solid var(--input-border); color: var(--text); padding: 15px; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 14px; resize: none; outline: none; box-sizing: border-box; line-height: 1.5; }
+        .ttp-status { padding: 10px 15px; border-top: 1px solid var(--input-border); display: flex; justify-content: space-between; align-items: center; background: var(--sidebar-bg); font-size: 12px; color: #8b949e; }
     </style>
 </head>
 <body>
@@ -86,18 +107,55 @@
 <input type="file" id="load-input" style="display:none" accept=".json" onchange="loadData(this)">
 <input type="file" id="manual-upload" style="display:none" accept="image/*" onchange="handleFileUpload(this)">
 
+<!-- TTP LIBRARY MODAL -->
+<div id="ttp-modal">
+    <div class="modal-content">
+        <div class="ttp-sidebar">
+            <div class="ttp-header">
+                <h3>Threat Library</h3>
+                <button class="btn btn-success" onclick="createNewTTP()" style="padding: 5px 10px; font-size: 10px;">+ New</button>
+            </div>
+            <div class="ttp-search">
+                <input type="text" id="ttp-search-input" placeholder="Search Payloads & Vulns..." oninput="renderTTPList(this.value)">
+            </div>
+            <div class="ttp-list" id="ttp-list"></div>
+        </div>
+        <div class="ttp-editor">
+            <div class="ttp-editor-header">
+                <input type="hidden" id="ttp-id">
+                <input type="text" id="ttp-title" placeholder="Title (e.g. OpenSSL Sudo Priv Esc)" oninput="handleTTPInput()">
+                <input type="text" id="ttp-category" class="cat-input" placeholder="Category (e.g. Initial Access)" oninput="handleTTPInput()">
+            </div>
+            <div class="ttp-editor-body">
+                <textarea id="ttp-content" placeholder="Enter commands, explanations, or code snippets here..." oninput="handleTTPInput()"></textarea>
+            </div>
+            <div class="ttp-status">
+                <span id="ttp-save-status">Local Database Ready</span>
+                <div style="display:flex; gap: 8px;">
+                    <button class="btn" style="background:#2ea043; color:white; border:none; padding: 5px 15px;" onclick="document.getElementById('ttp-import-input').click()"> Import</button>
+                    <button class="btn" style="background:#1f6feb; color:white; border:none; padding: 5px 15px;" onclick="exportTTPs()">Export</button>
+                    <button class="btn btn-danger" onclick="deleteCurrentTTP()" style="padding: 5px 15px; margin-left: 10px;">Delete</button>
+                    <button class="btn" onclick="closeTTPModal()" style="padding: 5px 15px;">Close Library</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="file" id="ttp-import-input" style="display:none" accept=".json" onchange="importTTPs(this)">
+
+
 <textarea id="default-template" style="display:none;">
 # [Target Name] [Date]
 
-```attackpath
+&#96;&#96;&#96;attackpath
 - Target
  - Discovery
   - Web|Directories
-   - `gobuster`
+   - &#96;gobuster&#96;
     - /admin
  - Initial Access
   - *Vulnerability*|CVE-2021-44228
-```
+&#96;&#96;&#96;
 
 ## [T1] - [IP]
 
@@ -112,13 +170,12 @@
 ### Vulnerabilities
 
 ### Loot
-
 </textarea>
 
 <div id="left-pane">
     <div class="editor-header">
         <span>Engagement Notes (Markdown)</span>
-	<span style="color: var(--accent);"><font color=white>ALT+T</font>: Insert Timestamp <br><font color=white>CTRL+V</font>: Paste Screenshot <br><font color=white>|</font>: Flowchart Newline</span>
+        <span style="color: var(--accent);"><font color=white>ALT+T</font>: Timestamp <br><font color=white>CTRL+V</font>: Paste <br><font color=white>|</font>: Flowchart Node Newline</span>
     </div>
     <textarea id="markdown-editor" spellcheck="false" oninput="debouncedParse()"></textarea>
 </div>
@@ -134,6 +191,7 @@
             <button id="btn-export-png" class="btn" onclick="exportImage()">Export Super-HD Map</button>
             <button class="btn" onclick="exportMarkdown()">Export Notes (MD)</button>
         </div>
+        <button class="btn" style="background:#8957e5; color:#fff; border:none; width: 100%; margin-bottom: 10px;" onclick="openTTPModal()">Threat Library</button>
         <button class="btn" style="background:#d29922; color:#fff; border:none; width: 100%; margin-bottom: 10px;" onclick="exportZip()">Export Evidence (ZIP)</button>
         <button class="btn btn-danger" style="width: 100%; margin-bottom: 10px;" onclick="resetAll()">Reset Workspace</button>
         <div style="border-top: 1px solid var(--input-border); padding-top: 10px;">
@@ -253,7 +311,7 @@
 
     function renderMap(container, nodes, edges) {
         const options = {
-            layout: { hierarchical: { direction: 'UD', sortMethod: 'directed', nodeSpacing: 150, levelSeparation: 100, parentCentralization: true } },
+            layout: { hierarchical: { direction: 'LR', sortMethod: 'directed', nodeSpacing: 250, levelSeparation: 150, parentCentralization: true } },
             physics: { enabled: false },
             interaction: { dragNodes: true, dragView: true, zoomView: true, hover: true }
         };
@@ -274,27 +332,21 @@
     // ==========================================
     async function saveWithDialog(blob, defaultName, description, mimeType, extension) {
         try {
-            // Attempt to invoke the modern Native File System Access API
             if (window.showSaveFilePicker) {
                 const handle = await window.showSaveFilePicker({
                     suggestedName: defaultName,
-                    types: [{
-                        description: description,
-                        accept: { [mimeType]: ['.' + extension] },
-                    }],
+                    types: [{ description: description, accept: { [mimeType]: ['.' + extension] } }],
                 });
                 const writable = await handle.createWritable();
                 await writable.write(blob);
                 await writable.close();
-                return; // Successfully saved via Native OS Dialog
+                return;
             }
         } catch (err) {
-            if (err.name === 'AbortError') return; // User clicked "Cancel" in the native dialog
-            console.warn("Native Save Dialog failed or is blocked by Sandbox. Falling back to standard download.", err);
+            if (err.name === 'AbortError') return;
+            console.warn("Native Save Dialog blocked. Falling back to standard download.", err);
         }
 
-        // Fallback: Standard browser download if Native API is unavailable/blocked.
-        // This will pop up a dialog ONLY IF your browser settings are set to "Ask where to save each file"
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = defaultName;
@@ -312,7 +364,6 @@
             const originalText = btn.innerText;
             btn.innerText = "RENDERING HD...";
 
-            // 1. Create a massive ghost container
             const ghostContainer = document.createElement('div');
             ghostContainer.style.width = '6000px';
             ghostContainer.style.height = '4500px';
@@ -322,7 +373,6 @@
             ghostContainer.style.background = 'transparent';
             document.body.appendChild(ghostContainer);
 
-            // 2. Render ghost network
             const ghostNetwork = renderMap(ghostContainer, globalNodes, globalEdges);
 
             setTimeout(() => {
@@ -342,18 +392,15 @@
                     btn.innerText = originalText;
                     resolve(dataUrl);
                 }, 300);
-            }, 800); // Give extra time for the 5x render to settle
+            }, 800);
         });
     }
 
     async function exportImage() {
         const dataUrl = await getHighResImageData();
         if (!dataUrl) return;
-
-        // Convert DataURL to Blob for the Native Save Dialog
         const res = await fetch(dataUrl);
         const blob = await res.blob();
-
         const root = (document.getElementById('root-name').value || "engagement").replace(/[^\w\s-]/gi, '_');
         saveWithDialog(blob, root + "_hd_map.png", "HD Attack Map", "image/png", "png");
     }
@@ -370,6 +417,11 @@
         const hdMap = await getHighResImageData();
         zip.file(root + "_transparent_map.png", hdMap.split(',')[1], {base64: true});
         zip.file("notes.md", document.getElementById('markdown-editor').value);
+
+        // Ensure ttps contains the latest library, and stringify it
+        if (ttps && ttps.length > 0) {
+            zip.file("Threat_Library.json", JSON.stringify(ttps, null, 2));
+        }
 
         const blob = await zip.generateAsync({type:"blob"});
         saveWithDialog(blob, root + "_evidence.zip", "ZIP Archive", "application/zip", "zip");
@@ -407,7 +459,12 @@
     // SCREENSHOT HANDLING
     // ==========================================
     window.addEventListener('paste', e => {
-        if(document.activeElement === document.getElementById('markdown-editor')) return;
+        if(document.activeElement === document.getElementById('markdown-editor') ||
+           document.activeElement === document.getElementById('ttp-content') ||
+           document.activeElement === document.getElementById('ttp-title') ||
+           document.activeElement === document.getElementById('ttp-category') ||
+           document.activeElement === document.getElementById('ttp-search-input')) return;
+
         const item = Array.from(e.clipboardData.items).find(x => x.type.indexOf('image') !== -1);
         if (item) {
             let name = `screenshot_${images.length + 1}`;
@@ -456,6 +513,152 @@
     function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').style.display='flex'; }
     function resetAll() { if(confirm("Reset Workspace?")) { images = []; document.getElementById('gallery').innerHTML = ''; document.getElementById('markdown-editor').value = document.getElementById('default-template').value.trim(); parseNotesToGraph(); } }
     window.addEventListener('resize', () => { if (network) network.fit(); });
+
+    // ==========================================
+    // STANDALONE LOCAL-STORAGE THREAT LIBRARY
+    // ==========================================
+    let ttps = JSON.parse(localStorage.getItem('cyber_philomath_ttps')) || [];
+    let ttpSaveTimeout;
+
+    window.openTTPModal = () => {
+        document.getElementById('ttp-modal').style.display = 'flex';
+        window.renderTTPList();
+        if(ttps.length === 0) window.createNewTTP();
+    };
+
+    window.closeTTPModal = () => {
+        document.getElementById('ttp-modal').style.display = 'none';
+    };
+
+    window.renderTTPList = (filterQuery = '') => {
+        const listEl = document.getElementById('ttp-list');
+        listEl.innerHTML = '';
+        const q = filterQuery.toLowerCase();
+
+        const filtered = ttps.filter(t =>
+            (t.title || "").toLowerCase().includes(q) ||
+            (t.content || "").toLowerCase().includes(q) ||
+            (t.category || "").toLowerCase().includes(q)
+        );
+
+        const grouped = {};
+        filtered.forEach(t => {
+            const cat = t.category || 'Uncategorized';
+            if(!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(t);
+        });
+
+        for(let cat in grouped) {
+            const header = document.createElement('div');
+            header.className = 'ttp-category-label';
+            header.innerText = cat;
+            listEl.appendChild(header);
+
+            grouped[cat].forEach(t => {
+                const item = document.createElement('div');
+                item.className = 'ttp-item';
+                if (t.id === document.getElementById('ttp-id').value) item.classList.add('active');
+                item.innerText = t.title || 'Untitled TTP';
+                item.onclick = () => window.loadTTPIntoEditor(t);
+                listEl.appendChild(item);
+            });
+        }
+    };
+
+    window.loadTTPIntoEditor = (ttp) => {
+        document.getElementById('ttp-id').value = ttp.id;
+        document.getElementById('ttp-title').value = ttp.title || '';
+        document.getElementById('ttp-category').value = ttp.category || '';
+        document.getElementById('ttp-content').value = ttp.content || '';
+        document.getElementById('ttp-save-status').innerText = "Local changes saved";
+        window.renderTTPList(document.getElementById('ttp-search-input').value);
+    };
+
+    window.createNewTTP = () => {
+        document.getElementById('ttp-id').value = '';
+        document.getElementById('ttp-title').value = '';
+        document.getElementById('ttp-category').value = '';
+        document.getElementById('ttp-content').value = '';
+        document.getElementById('ttp-title').focus();
+        document.getElementById('ttp-save-status').innerText = "Unsaved draft";
+        window.renderTTPList(document.getElementById('ttp-search-input').value);
+    };
+
+    window.handleTTPInput = () => {
+        document.getElementById('ttp-save-status').innerText = "Saving locally...";
+        clearTimeout(ttpSaveTimeout);
+        ttpSaveTimeout = setTimeout(() => {
+            window.saveCurrentTTP();
+        }, 800);
+    };
+
+    window.saveCurrentTTP = () => {
+        const title = document.getElementById('ttp-title').value || 'Untitled TTP';
+        const category = document.getElementById('ttp-category').value || 'Uncategorized';
+        const content = document.getElementById('ttp-content').value || '';
+        let id = document.getElementById('ttp-id').value;
+
+        if(!id) {
+            id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : 'id_' + Date.now() + Math.random().toString(16).slice(2);
+            document.getElementById('ttp-id').value = id;
+            ttps.push({ id, title, category, content, timestamp: Date.now() });
+        } else {
+            const index = ttps.findIndex(t => t.id === id);
+            if (index > -1) {
+                ttps[index] = { id, title, category, content, timestamp: Date.now() };
+            } else {
+                ttps.push({ id, title, category, content, timestamp: Date.now() });
+            }
+        }
+
+        ttps.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+        localStorage.setItem('cyber_philomath_ttps', JSON.stringify(ttps));
+        document.getElementById('ttp-save-status').innerText = "Saved to Local Storage ✔";
+        window.renderTTPList(document.getElementById('ttp-search-input').value);
+    };
+
+    window.deleteCurrentTTP = () => {
+        const id = document.getElementById('ttp-id').value;
+        if (!id) return window.createNewTTP();
+
+        if(confirm("Delete this entry permanently from local storage?")) {
+            ttps = ttps.filter(t => t.id !== id);
+            localStorage.setItem('cyber_philomath_ttps', JSON.stringify(ttps));
+            window.createNewTTP();
+        }
+    };
+
+    window.exportTTPs = () => {
+        if(ttps.length === 0) { alert("Library is empty. Nothing to export."); return; }
+        const blob = new Blob([JSON.stringify(ttps, null, 2)], {type: "application/json"});
+        saveWithDialog(blob, "Threat_Library_Export.json", "TTP JSON", "application/json", "json");
+    };
+
+    window.importTTPs = (input) => {
+        if (!input.files || input.files.length === 0) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                const imported = JSON.parse(e.target.result);
+                if (Array.isArray(imported)) {
+                    imported.forEach(imp => {
+                        const existingIdx = ttps.findIndex(t => t.id === imp.id);
+                        if (existingIdx > -1) ttps[existingIdx] = imp; // Overwrite if same ID
+                        else ttps.push(imp); // Add new
+                    });
+                    localStorage.setItem('cyber_philomath_ttps', JSON.stringify(ttps));
+                    window.renderTTPList();
+                    alert("Library Import Successful!");
+                } else {
+                    alert("Invalid format. Expected an array of TTPs.");
+                }
+            } catch (err) {
+                alert("Failed to read JSON.");
+            }
+            input.value = '';
+        };
+        reader.readAsText(input.files[0]);
+    };
 </script>
 </body>
 </html>
