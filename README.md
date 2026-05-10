@@ -1,7 +1,7 @@
 # Cyber-Philomath-Notes
 Cyber Security all-in-one (HTML) note taking application.
 
-<img width="1920" height="1005" alt="image" src="https://github.com/user-attachments/assets/b147a673-d21b-48e8-bb7c-7816763873a6" />
+<img width="1917" height="978" alt="image" src="https://github.com/user-attachments/assets/e06765e6-ec2e-47c2-87f3-7dcf0adb26ba" />
 
 
 **Left Pane**
@@ -9,12 +9,17 @@ Includes a markdown (.md) formatted note taking section with a starting template
 penetration testing engagement, CTF, or HackTheBox box, etc.
 
 **Right Pane**
-Includes functionallity to export the flowchart as a .png file. Export .zip file including .png flowchart, .md markdown of notes, and any screenshots.
+Includes functionallity to export the flowchart as a .png file, .zip file including .png flowchart, .md markdown of notes, screenshots, and threat library entries.
 Additionally, included functionally is saving workspaces as .json files that can be loaded later and the ability to reset the workspace. 
 ** Select option in browser settings to "alway's ask where to save files" if you dont want the exports always going to the Downloads folder.
 
 The upload screenshot button lets you upload screenshots. The ability to paste screenshots (CTRL + V) is also supported. Screenshots are saved separately from the main markdown file
 this is mostly to save space, I might change it later.
+
+The "Threat Library" allows the entry of title and category of any threats found while on engagements. The entries are saved in the browsers cache and will be deleted if your browser is set to delete cache on closing. The menu does allow the library to be exported and saved for later imports.
+
+<img width="805" height="404" alt="image" src="https://github.com/user-attachments/assets/1bc105ec-67ee-4c25-acd6-5a2df57b9f30" />
+
 
 **Shortcuts**
 
@@ -41,8 +46,7 @@ Accepts code format for commands in-between back ticks **(``)** and newlines wit
   - *Vulnerability*|CVE-2021-44228
 ```
    
-<img width="427" height="677" alt="image" src="https://github.com/user-attachments/assets/0f6956de-99ba-4815-b219-d0159c1e163e" />
-
+<img width="761" height="419" alt="image" src="https://github.com/user-attachments/assets/737d92d5-4a6e-46f7-ba25-0df22ec63e2e" />
 
 **Goals:**
 
